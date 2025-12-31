@@ -48,13 +48,14 @@ tree = {
 
 //export async function getWikiSearch() {
 async function getWikiSearch() {
-  speciesName = 'Panthera leo leo'
-  url = `https://api.gbif.org/v1/species/match?scientificName=${encodeURIComponent(speciesName)}`;
+  speciesName = 'Panthera tigris altaica'
+  url = `https://api.gbif.org/v2/species/match?scientificName=${encodeURIComponent(speciesName)}`;
 
   try {
     // const data = await (await fetch(url)).json();
     data = await (await fetch(url)).json();
     console.log(data);
+    
     console.log(")");
     testText = document.getElementById("text");
     testText.innerText = data;
@@ -63,8 +64,32 @@ async function getWikiSearch() {
     console.error("Fetch error:", error);
   }
 
-  speciesName = 'Panthera onca'
-  url = `https://api.gbif.org/v1/species/match?scientificName=${encodeURIComponent(speciesName)}`;
+  speciesName = 'Panthera onca centralis'
+  url = `https://api.gbif.org/v2/species/match?scientificName=${encodeURIComponent(speciesName)}`;
+
+  try {
+    // const data = await (await fetch(url)).json();
+    data = await (await fetch(url)).json();
+    testText = document.getElementById("text");
+    addToJSON(data)
+  } catch (error) {
+    console.error("Fetch error:", error);
+  }
+
+  speciesName = 'Panthera onca peruviana'
+  url = `https://api.gbif.org/v2/species/match?scientificName=${encodeURIComponent(speciesName)}`;
+
+  try {
+    // const data = await (await fetch(url)).json();
+    data = await (await fetch(url)).json();
+    testText = document.getElementById("text");
+    addToJSON(data)
+  } catch (error) {
+    console.error("Fetch error:", error);
+  }
+
+  speciesName = 'Panthera onca peruviana'
+  url = `https://api.gbif.org/v2/species/match?scientificName=${encodeURIComponent(speciesName)}`;
 
   try {
     // const data = await (await fetch(url)).json();
@@ -76,8 +101,20 @@ async function getWikiSearch() {
   }
 
 
-  speciesName = 'Felis catus'
-  url = `https://api.gbif.org/v1/species/match?scientificName=${encodeURIComponent(speciesName)}`;
+  speciesName = 'Felis silvestris catus'
+  url = `https://api.gbif.org/v2/species/match?scientificName=${encodeURIComponent(speciesName)}`;
+
+  try {
+    // const data = await (await fetch(url)).json();
+    data = await (await fetch(url)).json();
+    testText = document.getElementById("text");
+    addToJSON(data)
+  } catch (error) {
+    console.error("Fetch error:", error);
+  }
+
+  speciesName = 'Sepia officinalis hierredda'
+  url = `https://api.gbif.org/v2/species/match?scientificName=${encodeURIComponent(speciesName)}`;
 
   try {
     // const data = await (await fetch(url)).json();
@@ -92,161 +129,204 @@ async function getWikiSearch() {
   parentFunction(tree)
 
 }
-//Optimize this
-function addToJSON(newEntry){
-  //Add Phylum Entry
+
+function tree_search(levelName, level,newEntry){//Checks if specific entry is in the tree
   inTree = false;
-  indexOfChild = 0;
-  for(i = 0; i<tree.children.length;i++){
-    if(tree.children[i].name.toLowerCase() == newEntry.phylum.toLowerCase()){
-      inTree = true;
-      indexOfChild=i;
-      break;
+  indexOfChild = 0; 
+  try{
+    for(i = 0; i<levelName.children.length;i++){
+      if((levelName.children[i].name.toLowerCase() == newEntry.classification[level].name.toLowerCase())){
+        inTree = true;
+        indexOfChild=i;
+        break;
+      }
+    }
+  
+    if(inTree == false){  
+      levelName.children.push({
+        "name":newEntry.classification[level].name,
+        "children":[]
+      }
+      );
+      indexOfChild = levelName.children.length-1;
     }
   }
-
-  if(inTree == false){  
-    tree.children.push({
-      "name":newEntry.phylum,
-      "children":[]
-    }
-    );
-    indexOfChild = tree.children.length-1;
+  catch(error){ //Throws error if there is no subspecies
+    console.log("No subspecies")
   }
-
-  //Add Class Entry
-  phylum = tree.children[indexOfChild];
-  inTree = false;
-  for(i = 0; i<phylum.children.length;i++){
-    if(phylum.children[i].name.toLowerCase() == newEntry.class.toLowerCase()){
-      inTree = true;
-      indexOfChild=i;
-      break;
-    }
-  }
-
-  if(inTree == false){  
-    phylum.children.push({
-      "name":newEntry.class,
-      "children":[]
-    }
-    );
-    indexOfChild = phylum.children.length-1;
-  }
-
-  //Add Order Entry
-  _class = phylum.children[indexOfChild];
-  inTree = false;
-  for(i = 0; i<_class.children.length;i++){
-    if(_class.children[i].name.toLowerCase() == newEntry.order.toLowerCase()){
-      inTree = true;
-      indexOfChild=i;
-      break;
-    }
-  }
-
-  if(inTree == false){  
-    _class.children.push({
-      "name":newEntry.order,
-      "children":[]
-    }
-    );
-    indexOfChild = _class.children.length-1;
-  }
-
-
-
-//Add Family Entry
-  order = _class.children[indexOfChild];
-  inTree = false;
-  for(i = 0; i<order.children.length;i++){
-    if(order.children[i].name.toLowerCase() == newEntry.family.toLowerCase()){
-      inTree = true;
-      indexOfChild=i;
-      break;
-    }
-  }
-
-  if(inTree == false){  
-    order.children.push({
-      "name":newEntry.family,
-      "children":[]
-    }
-    );
-    indexOfChild = order.children.length-1;
-  }
-
-  //Add Genus Entry
-  family = order.children[indexOfChild];
-  inTree = false;
-  for(i = 0; i<family.children.length;i++){
-    if(family.children[i].name.toLowerCase() == newEntry.genus.toLowerCase()){
-      inTree = true;
-      indexOfChild=i;
-      break;
-    }
-
-  }
-
-  if(inTree == false){  
-    family.children.push({
-      "name":newEntry.genus,
-      "children":[]
-    }
-    );
-    indexOfChild = family.children.length-1;
-  }
-
-  //Add Species Entry
-  genus = family.children[indexOfChild];
-  inTree = false;
-  for(i = 0; i<genus.children.length;i++){
-    if(genus.children[i].name.toLowerCase() == newEntry.species.toLowerCase()){
-      inTree = true;
-      indexOfChild=i;
-      break;
-    }
-  }
-
-  if(inTree == false){  
-    genus.children.push({
-      "name":newEntry.species,
-      "children":[]
-    }
-    );
-    indexOfChild = family.children.length-1;
-  }
+  
+  return indexOfChild;
 }
 
-// fetch('./treedata.json') //Grabbnig Json Data ->
-// .then(function(resp){
-//     return resp.json();
-// })
-// .then(function(data){
-//     console.log("Test")
-//    parentFunction(data);
-// }); //<-
+//Optimize this
+function addToJSON(newEntry){
+
+    indexOfChild = tree_search(tree,1,newEntry);
+
+    phylum = tree.children[indexOfChild];
+    indexOfChild = tree_search(phylum,2,newEntry);
+
+    _class = phylum.children[indexOfChild];
+    indexOfChild = tree_search(_class,3,newEntry);
+
+    order = _class.children[indexOfChild];
+    indexOfChild = tree_search(order,4,newEntry);
+
+    family = order.children[indexOfChild];
+    indexOfChild = tree_search(family,5,newEntry);
+
+    genus = family.children[indexOfChild];
+    indexOfChild = tree_search(genus,6,newEntry);
+
+    species = genus.children[indexOfChild];
+    indexOfChild = tree_search(species,7,newEntry);
 
 
-// const treeData = {
-//     name: "Top Level",
-//     children: [
-//       {
-//         name: "Level 2: A",
-//         children: [
-//           {
-//             name: "Son of A",
-//           },
-//           {
-//             name: "Daughter of A",
-//           },
-//         ],
-//       },
-//       {
-//         name: "Level 2: B",
-//       },
-//     ],
-//   };
+  
+//   //Add Phylum Entry
+//   inTree = false;
+//   indexOfChild = 0; 
+//   for(i = 0; i<tree.children.length;i++){
+//     if(tree.children[i].name.toLowerCase() == newEntry.phylum.toLowerCase()){
+//       inTree = true;
+//       indexOfChild=i;
+//       break;
+//     }
+//   }
+
+//   if(inTree == false){  
+//     tree.children.push({
+//       "name":newEntry.phylum,
+//       "children":[]
+//     }
+//     );
+//     indexOfChild = tree.children.length-1;
+//   }
+
+//   //Add Class Entry
+//   phylum = tree.children[indexOfChild];
+//   inTree = false;
+//   for(i = 0; i<phylum.children.length;i++){
+//     if(phylum.children[i].name.toLowerCase() == newEntry.class.toLowerCase()){
+//       inTree = true;
+//       indexOfChild=i;
+//       break;
+//     }
+//   }
+
+//   if(inTree == false){  
+//     phylum.children.push({
+//       "name":newEntry.class,
+//       "children":[]
+//     }
+//     );
+//     indexOfChild = phylum.children.length-1;
+//   }
+
+//   //Add Order Entry
+//   _class = phylum.children[indexOfChild];
+//   inTree = false;
+//   for(i = 0; i<_class.children.length;i++){
+//     if(_class.children[i].name.toLowerCase() == newEntry.order.toLowerCase()){
+//       inTree = true;
+//       indexOfChild=i;
+//       break;
+//     }
+//   }
+
+//   if(inTree == false){  
+//     _class.children.push({
+//       "name":newEntry.order,
+//       "children":[]
+//     }
+//     );
+//     indexOfChild = _class.children.length-1;
+//   }
+
+
+
+// //Add Family Entry
+//   order = _class.children[indexOfChild];
+//   inTree = false;
+//   for(i = 0; i<order.children.length;i++){
+//     if(order.children[i].name.toLowerCase() == newEntry.family.toLowerCase()){
+//       inTree = true;
+//       indexOfChild=i;
+//       break;
+//     }
+//   }
+
+//   if(inTree == false){  
+//     order.children.push({
+//       "name":newEntry.family,
+//       "children":[]
+//     }
+//     );
+//     indexOfChild = order.children.length-1;
+//   }
+
+//   //Add Genus Entry
+//   family = order.children[indexOfChild];
+//   inTree = false;
+//   for(i = 0; i<family.children.length;i++){
+//     if(family.children[i].name.toLowerCase() == newEntry.genus.toLowerCase()){
+//       inTree = true;
+//       indexOfChild=i;
+//       break;
+//     }
+
+//   }
+
+//   if(inTree == false){  
+//     family.children.push({
+//       "name":newEntry.genus,
+//       "children":[]
+//     }
+//     );
+//     indexOfChild = family.children.length-1;
+//   }
+
+//   //Add Species Entry
+//   genus = family.children[indexOfChild];
+//   inTree = false;
+//   for(i = 0; i<genus.children.length;i++){
+//     if(genus.children[i].name.toLowerCase() == newEntry.species.toLowerCase()){
+//       inTree = true;
+//       indexOfChild=i;
+//       break;
+//     }
+//   }
+
+//   if(inTree == false){  
+//     genus.children.push({
+//       "name":newEntry.species,
+//       "children":[]
+//     }
+//     );
+//     indexOfChild = genus.children.length-1;
+//   }
+
+//     //Add Sub-Species Entry
+//     species = genus.children[indexOfChild];
+//     inTree = false;
+//     for(i = 0; i<species.children.length;i++){
+//       if(species.children[i].name.toLowerCase() == newEntry.species.toLowerCase()){
+//         inTree = true;
+//         indexOfChild=i;
+//         break;
+//       }
+//     }
+  
+//     if(inTree == false){  
+//       genus.children.push({
+//         "name":newEntry.species,
+//         "children":[]
+//       }
+//       );
+//       indexOfChild = genus.children.length-1;
+//     }
+}
+
 
 getWikiSearch();
 function parentFunction(tData){
@@ -267,7 +347,7 @@ function parentFunction(tData){
     const duration = 750;
     let root;
     
-    const treemap = d3.tree().size([height, width]);
+    const treemap = d3.tree().size([width, height]);
     root = d3.hierarchy(tData, function (d) {
       return d.children;
     });
@@ -297,9 +377,10 @@ function parentFunction(tData){
         .append("g")
         .attr("class", "node")
         .attr("transform", function (d) {
-          return "translate(" + source.y0 + ", " + source.x0 + ")";
+          return "translate(" + source.x0 + ", " + source.y0 + ")";
         })
-        .on("click", click); //Attaches event listener
+        .on("dblclick", dblclick) //Attaches event listener
+        .on("click", click);
     
       nodeEnter
         .append("circle")
@@ -328,7 +409,7 @@ function parentFunction(tData){
         .transition()
         .duration(duration)
         .attr("transform", function (d) {
-          return "translate(" + d.y + ", " + d.x + ")";
+          return "translate(" + d.x + ", " + d.y + ")";
         });
     
       nodeUpdate
@@ -344,7 +425,7 @@ function parentFunction(tData){
         .transition()
         .duration(duration)
         .attr("transform", function (d) {
-          return "translate(" + source.y + "," + source.x + ")";
+          return "translate(" + source.x + "," + source.y + ")";
         })
         .remove();
     
@@ -353,10 +434,10 @@ function parentFunction(tData){
     
       // links
       function diagonal(s, d) {
-        path = `M ${s.y} ${s.x}
-          C ${(s.y + d.y) / 2} ${s.x}
-            ${(s.y + d.y) / 2} ${d.x}
-            ${d.y} ${d.x}`;
+        path = `M ${s.x} ${s.y}
+          L ${s.x} ${(s.y + d.y) / 2},
+            ${d.x} ${(s.y + d.y) / 2},
+            ${d.x} ${d.y}`;
         return path;
       }
       const links = treeData.descendants().slice(1);
@@ -393,8 +474,32 @@ function parentFunction(tData){
         d.x0 = d.x;
         d.y0 = d.y;
       });
+
+      let clickTimer;
+      function click(event, d) { //When click get the name of the Node and get information about the species
+        if (clickTimer){
+          clearTimeout(clickTimer);
+        }
+        clickTimer = setTimeout(async () => {
+          if (!d.children) {
+            const nodeName = d.data.name;
+            console.log("You clicked:", nodeName);
+            url = `https://api.gbif.org/v1/species/search?scientificName=${encodeURIComponent(nodeName)}`;
+            try {
+              data = await (await fetch(url)).json();
+              testText = document.getElementById("text");
+              console.log(data)
+            } catch (error) {
+              console.error("Fetch error:", error);
+            }
+
+          }
+          },250);
+      }
     
-      function click(event, d) {
+      function dblclick(event, d) {
+        clearTimeout(clickTimer);
+        clickTimer = null;
         if (d.children) {
           d._children = d.children;
           d.children = null;
